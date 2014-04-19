@@ -30,7 +30,7 @@ public class CYK {
     static GrammarMap processRulesInput(Scanner input)
     {
         Integer numRules = 0;
-        Character c = null;
+        String c = null;
         String derivation = "";
         GrammarMap map = new GrammarMap();
         
@@ -46,7 +46,7 @@ public class CYK {
            {
                if (input.hasNext())
                {
-                   c = input.next().charAt(0);
+                   c = input.next();
                }
                
                input.next(); // skips the ->  

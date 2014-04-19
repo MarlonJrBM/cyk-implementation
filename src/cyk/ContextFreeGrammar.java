@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 
 /**
@@ -31,7 +32,7 @@ public class ContextFreeGrammar implements ContextFreeGrammarInterface {
     }
     
     @Override
-    public boolean hasDerivation(Character a1, CharSequence a2)
+    public boolean hasDerivation(CharSequence a1, CharSequence a2)
     {
         return (rules.hasRule(a1, a2));
     }
@@ -39,8 +40,62 @@ public class ContextFreeGrammar implements ContextFreeGrammarInterface {
    
     @Override
     public boolean recognizeWord(CharSequence w)
+
     {
-        return false;
+        ArrayList<String>[][] table;
+        int length = w.length();
+        table = new ArrayList[length][];
+        for (int i = 0; i < length; ++i)
+        {
+         table[i] = new ArrayList[length];
+         for (int j = 0; j < length; ++j)
+            table[i][j] = new ArrayList < String > ();
+        }       
+        
+        for (int i = 0; i < length; ++i)
+      {
+         Set<CharSequence> keys = rules.keySet();
+         for (CharSequence key : keys)
+         {
+            if (this.hasDerivation(key, w.subSequence(i, i+1)))
+               table[i][i].add((String)key);
+         }  
+      }
+        
+      for (int l = 2; l <= length; ++l)
+      {
+         for (int i = 0; i <= length - l; ++i)
+         {
+            int j = i + l - 1;
+            for (int k = i; k <= j - 1; ++k)
+            {
+               Set<CharSequence> keys = rules.keySet();
+               for (CharSequence key : keys)
+               {
+                  List<CharSequence> stringValues = rules.get(key);
+                  for (CharSequence s : stringValues)
+                  {
+                      if (s.length()>1) //it is not a terminal
+                      {
+                          if (table[i][k].contains(s.subSequence(0, 1))
+                                  && table[k+1][j].contains(s.subSequence(1, 2)))
+                          {
+                              table[i][j].add((String)key);
+                          }
+
+                      }
+                  }
+
+               }
+            }
+         }
+      } 
+      
+      if (table[0][length - 1].contains("S")) // we started from 0
+         return true;
+      return false;
+        
+      
     }
     
     
@@ -49,11 +104,11 @@ public class ContextFreeGrammar implements ContextFreeGrammarInterface {
 }
 
 
-class GrammarMap extends TreeMap<Character,List<CharSequence>>
+class GrammarMap extends TreeMap<CharSequence,List<CharSequence>>
 {
     
     
-    public void addRule(Character variable, CharSequence derivation)
+    public void addRule(CharSequence variable, CharSequence derivation)
     {
         ArrayList<CharSequence> list = new ArrayList();
         if (this.containsKey(variable))
@@ -69,7 +124,7 @@ class GrammarMap extends TreeMap<Character,List<CharSequence>>
         }
     }
     
-    public boolean hasRule(Character a1, CharSequence a2)
+    public boolean hasRule(CharSequence a1, CharSequence a2)
     {
         
         ArrayList<CharSequence> list = (ArrayList) this.get(a1);

@@ -16,7 +16,7 @@ public interface ContextFreeGrammarInterface {
     
     public boolean recognizeWord(CharSequence w);
     
-    public boolean hasDerivation(Character a1, CharSequence a2);
+    public boolean hasDerivation(CharSequence a1, CharSequence a2);
     
     
     
