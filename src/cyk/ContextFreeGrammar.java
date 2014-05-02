@@ -115,7 +115,7 @@ class GrammarMap extends TreeMap<CharSequence,List<CharSequence>>
         {
             list.addAll(this.get(variable));
             list.add(derivation);
-            this.replace(variable, list);
+            this.put(variable, list);
         }
         else
         {
